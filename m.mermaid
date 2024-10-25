@@ -1,5 +1,3 @@
-# Terraform Hub
-```mermaid
 graph TB
     subgraph AWS_Cloud["AWS Cloud"]
         subgraph VPC["VPC (192.168.0.0/16)"]
@@ -8,7 +6,7 @@ graph TB
                 GK[("Grafana/Kibana")]
             end
             
-            subgraph Private_Subnet_2["Private Subnet 2(192.168.2.0/24)"]
+            subgraph Private_Subnet_2["Private Subnet 2 (192.168.2.0/24)"]
                 HA[("HA Proxy")]
                 LO[("Locust")]
                 MD[("Minidb")]
@@ -60,4 +58,3 @@ graph TB
     style Public_Subnet fill:#95DAB6,stroke:#95DAB6
     style IGW fill:#FF9900
     style NAT fill:#FF9900
-```
