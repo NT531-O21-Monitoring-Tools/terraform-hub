@@ -66,6 +66,10 @@ resource "aws_instance" "vpn_instance" {
     device_index         = 0
   }
 
+  root_block_device {
+    volume_size = var.vpn_instance_ebs_size
+  }
+
   tags = {
     Name = "${var.aws_project}-VPN-instance-${count.index}"
   }
@@ -80,6 +84,10 @@ resource "aws_instance" "monitoring_fe_instance" {
   key_name               = var.aws_key_name
   subnet_id              = module.vpc.private_subnets[0]
   vpc_security_group_ids = [module.monitoring_sg.id]
+
+  root_block_device {
+    volume_size = var.monitoring_frontend_instance_ebs_size
+  }
 
   tags = {
     Name = "${var.aws_project}-monitoring-fe-instance-${count.index}"
@@ -96,6 +104,10 @@ resource "aws_instance" "monitoring_be_instance" {
   subnet_id              = module.vpc.private_subnets[0]
   vpc_security_group_ids = [module.monitoring_sg.id]
 
+  root_block_device {
+    volume_size = var.monitoring_backend_instance_ebs_size
+  }
+
   tags = {
     Name = "${var.aws_project}-monitoring-be-instance-${count.index}"
   }
@@ -111,63 +123,11 @@ resource "aws_instance" "k3s_instance" {
   subnet_id              = module.vpc.private_subnets[1]
   vpc_security_group_ids = [module.apps_sg.id]
 
+  root_block_device {
+    volume_size = var.app_instance_ebs_size
+  }
+
   tags = {
     Name = "${var.aws_project}-k3s-cluster-instance-${count.index}"
   }
-}
-
-# EBS for VPN server
-resource "aws_ebs_volume" "vpn_ebs" {
-  count             = var.vpn_instance_count
-  availability_zone = local.selected_azs[count.index]
-  size              = var.vpn_instance_ebs_size
-}
-
-resource "aws_volume_attachment" "vpn_ebs_attachment" {
-  count       = var.vpn_instance_count
-  device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.vpn_ebs[count.index].id
-  instance_id = aws_instance.vpn_instance[count.index].id
-}
-
-# EBS for Monitoring Frontend
-resource "aws_ebs_volume" "monitoring_fe_ebs" {
-  count             = var.monitoring_frontend_instance_count
-  availability_zone = local.selected_azs[count.index]
-  size              = var.monitoring_frontend_instance_ebs_size
-}
-
-resource "aws_volume_attachment" "monitoring_fe_ebs_attachment" {
-  count       = var.monitoring_frontend_instance_count
-  device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.monitoring_fe_ebs[count.index].id
-  instance_id = aws_instance.monitoring_fe_instance[count.index].id
-}
-
-# EBS for Monitoring Backend
-resource "aws_ebs_volume" "monitoring_be_ebs" {
-  count             = var.monitoring_backend_instance_count
-  availability_zone = local.selected_azs[count.index]
-  size              = var.monitoring_backend_instance_ebs_size
-}
-
-resource "aws_volume_attachment" "monitoring_be_ebs_attachment" {
-  count       = var.monitoring_backend_instance_count
-  device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.monitoring_be_ebs[count.index].id
-  instance_id = aws_instance.monitoring_be_instance[count.index].id
-}
-
-# EBS for K3s Cluster
-resource "aws_ebs_volume" "k3s_ebs" {
-  count             = var.app_instance_count
-  availability_zone = local.selected_azs[count.index]
-  size              = var.app_instance_ebs_size
-}
-
-resource "aws_volume_attachment" "k3s_ebs_attachment" {
-  count       = var.app_instance_count
-  device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.k3s_ebs[count.index].id
-  instance_id = aws_instance.k3s_instance[count.index].id
 }

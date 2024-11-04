@@ -32,6 +32,13 @@ module "vpn_server_sg" {
       protocol    = "tcp"
       ip          = "0.0.0.0/0"
     },
+    {
+      description = "Allow ICMP Access"
+      from_port = -1
+      to_port   = -1
+      protocol  = "icmp"
+      ip        = "0.0.0.0/0"
+    }
   ]
 
   egress_rules_with_cidr = [
@@ -51,6 +58,16 @@ module "monitoring_sg" {
   name        = "${var.aws_project}-private"
   vpc_id      = module.vpc.vpc_id
   description = "Security group for Monitoring"
+
+  ingress_rules_with_cidr = [ 
+    {
+      description = "Allow ICMP Access"
+      from_port = -1
+      to_port   = -1
+      protocol  = "icmp"
+      ip        = "0.0.0.0/0"
+    }
+   ]
 
   ingress_rules_with_security_group = [
     {
@@ -119,6 +136,16 @@ module "apps_sg" {
   name        = "applications"
   description = "Security group for Applications"
   vpc_id      = module.vpc.vpc_id
+
+  ingress_rules_with_cidr = [ 
+    {
+      description = "Allow ICMP Access"
+      from_port = -1
+      to_port   = -1
+      protocol  = "icmp"
+      ip        = "0.0.0.0/0"
+    }
+   ]
 
   ingress_rules_with_security_group = [
     {
