@@ -13,12 +13,6 @@ variable "internet_gateway_id" {
   type        = string
 }
 
-variable "nat_gateway_id" {
-  description = "ID of the NAT Gateway"
-  type        = string
-  default     = ""
-}
-
 variable "enable_nat_gateway" {
   description = "Whether to create a private route table with NAT Gateway"
   type        = bool
@@ -34,4 +28,9 @@ variable "private_subnet_ids" {
   description = "List of private subnet IDs"
   type        = list(string)
   default     = []
+}
+
+variable "eni_id" {
+  description = "ID of the Elastic Network Interface"
+  type        = string
 }

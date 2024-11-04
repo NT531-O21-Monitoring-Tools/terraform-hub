@@ -39,5 +39,10 @@ variable "availability_zones" {
 variable "enable_nat_gateway" {
   description = "A boolean flag to enable/disable NAT Gateway"
   type        = bool
-  default     = true
+  default     = false
+}
+
+variable "eni_id" {
+  description = "ID of the Elastic Network Interface (ENI) for the NAT Gateway"
+  type        = string
 }

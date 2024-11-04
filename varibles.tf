@@ -38,6 +38,27 @@ variable "aws_vpc_config" {
   })
 }
 
+variable "aws_instance_type" {
+  description = "Instance type"
+  type        = string
+}
+
+variable "aws_eni_ip" {
+  description = "ENI IPs"
+  type        = string
+}
+
+variable "aws_key_name" {
+  description = "Key name"
+  type        = string
+}
+
+variable "ami" {
+  description = "AMI ID for the EC2 instances"
+  type        = string
+  default     = ""
+}
+
 variable "vpn_instance_count" {
   description = "Number of vpn instances"
   type        = number
@@ -56,9 +77,4 @@ variable "monitoring_backend_instance_count" {
 variable "app_instance_count" {
   description = "Number of app instances"
   type        = number
-}
-
-variable "aws_instance_type" {
-  description = "Instance type"
-  type        = string
 }

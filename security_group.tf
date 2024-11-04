@@ -2,10 +2,22 @@
 module "vpn_server_sg" {
   source      = "./modules/security_group"
   name        = "vpn-server"
-  description = "Security group for VPN server"
+  description = "Security group for HAProxy VPN Server"
   vpc_id      = module.vpc.vpc_id
 
   ingress_rules_with_cidr = [
+    {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
     {
       description = "Allow OpenVPN Access"
       from_port   = 1194
@@ -18,7 +30,7 @@ module "vpn_server_sg" {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      ip          = "${trimspace(data.http.my_ip.response_body)}/32"
+      ip          = "0.0.0.0/0"
     },
   ]
 
@@ -38,7 +50,7 @@ module "monitoring_sg" {
   source      = "./modules/security_group"
   name        = "${var.aws_project}-private"
   vpc_id      = module.vpc.vpc_id
-  description = "Security group for Prometheus and Loki"
+  description = "Security group for Monitoring"
 
   ingress_rules_with_security_group = [
     {
@@ -77,13 +89,6 @@ module "monitoring_sg" {
       security_group_id = module.vpn_server_sg.id
     },
     {
-      description       = "Allow Icinga HTTPS Access"
-      from_port        = 443
-      to_port          = 443
-      protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
-    },
-    {
       description       = "Allow Icinga API Access"
       from_port        = 5665
       to_port          = 5665
@@ -112,36 +117,10 @@ module "monitoring_sg" {
 module "apps_sg" {
   source      = "./modules/security_group"
   name        = "applications"
-  description = "Security group for HA, Locust, and Minikube"
+  description = "Security group for Applications"
   vpc_id      = module.vpc.vpc_id
 
   ingress_rules_with_security_group = [
-    {
-      from_port        = 80
-      to_port          = 80
-      protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
-    },
-    {
-      from_port        = 443
-      to_port          = 443
-      protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
-    },
-    {
-      description       = "Allow HAProxy Stats"
-      from_port        = 8404
-      to_port          = 8404
-      protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
-    },
-    {
-      description       = "Allow Locust Web UI Access"
-      from_port        = 8089
-      to_port          = 8089
-      protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
-    },
     {
       description       = "Allow SSH Access"
       from_port        = 22

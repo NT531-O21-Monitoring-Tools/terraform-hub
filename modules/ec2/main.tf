@@ -28,9 +28,19 @@ resource "aws_instance" "this" {
   ami           = local.ec2_ami
   instance_type = var.instance_type
 
-  subnet_id              = var.subnets_id[count.index % length(var.subnets_id)]
-  vpc_security_group_ids = var.sgs_id
   key_name               = var.key_name
+  user_data              = var.user_data != "" ? var.user_data : null
+  subnet_id              = length(var.subnets_id) > 0 ? var.subnets_id[0] : null
+  vpc_security_group_ids = var.sgs_id != null ? var.sgs_id : []
+
+  dynamic "network_interface" {
+    for_each = var.eni_ids
+    content {
+      device_index         = network_interface.key
+      network_interface_id = network_interface.value
+    }
+  }
+
   tags = {
     Name = "${var.name}-instance-${count.index}"
   }

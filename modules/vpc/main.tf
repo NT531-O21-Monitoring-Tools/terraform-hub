@@ -43,22 +43,14 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
-# Nat Gateway
-module "nat" {
-  source           = "../nat"
-  enable_nat_gateway       = var.enable_nat_gateway
-  name             = var.name
-  public_subnet_id = aws_subnet.public[0].id  # Sử dụng subnet đầu tiên được tạo
-}
-
 # Route Tables
 module "route_tables" {
   source              = "../route_tables"
   vpc_id              = aws_vpc.main.id
   name                = var.name
   internet_gateway_id = aws_internet_gateway.main.id
-  nat_gateway_id      = module.nat.nat_gateway_id
   enable_nat_gateway  = var.enable_nat_gateway
   public_subnet_ids   = aws_subnet.public[*].id
   private_subnet_ids  = aws_subnet.private[*].id
+  eni_id              = var.eni_id
 }
