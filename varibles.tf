@@ -78,3 +78,27 @@ variable "app_instance_count" {
   description = "Number of app instances"
   type        = number
 }
+
+variable "vpn_instance_ebs_size" {
+  description = "Size of the EBS volume for the VPN instance"
+  type        = number
+  default     = 8
+}
+
+variable "monitoring_frontend_instance_ebs_size" {
+  description = "Size of the EBS volume for the monitoring frontend instance"
+  type        = number
+  default     = 8
+}
+
+variable "monitoring_backend_instance_ebs_size" {
+  description = "Size of the EBS volume for the monitoring backend instance"
+  type        = number
+  default     = 8
+}
+
+variable "app_instance_ebs_size" {
+  description = "Size of the EBS volume for the app instance"
+  type        = number
+  default     = 8
+}

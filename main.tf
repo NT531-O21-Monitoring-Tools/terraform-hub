@@ -66,8 +66,6 @@ resource "aws_instance" "vpn_instance" {
     device_index         = 0
   }
 
-  source_dest_check = false
-
   tags = {
     Name = "${var.aws_project}-VPN-instance-${count.index}"
   }
@@ -122,7 +120,7 @@ resource "aws_instance" "k3s_instance" {
 resource "aws_ebs_volume" "vpn_ebs" {
   count             = var.vpn_instance_count
   availability_zone = local.selected_azs[count.index]
-  size              = 10
+  size              = var.vpn_instance_ebs_size
 }
 
 resource "aws_volume_attachment" "vpn_ebs_attachment" {
@@ -136,7 +134,7 @@ resource "aws_volume_attachment" "vpn_ebs_attachment" {
 resource "aws_ebs_volume" "monitoring_fe_ebs" {
   count             = var.monitoring_frontend_instance_count
   availability_zone = local.selected_azs[count.index]
-  size              = 10
+  size              = var.monitoring_frontend_instance_ebs_size
 }
 
 resource "aws_volume_attachment" "monitoring_fe_ebs_attachment" {
@@ -150,7 +148,7 @@ resource "aws_volume_attachment" "monitoring_fe_ebs_attachment" {
 resource "aws_ebs_volume" "monitoring_be_ebs" {
   count             = var.monitoring_backend_instance_count
   availability_zone = local.selected_azs[count.index]
-  size              = 10
+  size              = var.monitoring_backend_instance_ebs_size
 }
 
 resource "aws_volume_attachment" "monitoring_be_ebs_attachment" {
@@ -164,7 +162,7 @@ resource "aws_volume_attachment" "monitoring_be_ebs_attachment" {
 resource "aws_ebs_volume" "k3s_ebs" {
   count             = var.app_instance_count
   availability_zone = local.selected_azs[count.index]
-  size              = 10
+  size              = var.app_instance_ebs_size
 }
 
 resource "aws_volume_attachment" "k3s_ebs_attachment" {
