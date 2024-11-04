@@ -43,11 +43,6 @@ variable "aws_instance_type" {
   type        = string
 }
 
-variable "aws_eni_ip" {
-  description = "ENI IPs"
-  type        = string
-}
-
 variable "aws_key_name" {
   description = "Key name"
   type        = string
@@ -59,7 +54,7 @@ variable "ami" {
   default     = ""
 }
 
-variable "vpn_instance_count" {
+variable "bastion_instance_count" {
   description = "Number of vpn instances"
   type        = number
 }
@@ -74,13 +69,13 @@ variable "monitoring_backend_instance_count" {
   type        = number
 }
 
-variable "app_instance_count" {
+variable "cluster_instance_count" {
   description = "Number of app instances"
   type        = number
 }
 
-variable "vpn_instance_ebs_size" {
-  description = "Size of the EBS volume for the VPN instance"
+variable "bastion_instance_ebs_size" {
+  description = "Size of the EBS volume for the bastion instance"
   type        = number
   default     = 8
 }
@@ -97,8 +92,28 @@ variable "monitoring_backend_instance_ebs_size" {
   default     = 8
 }
 
-variable "app_instance_ebs_size" {
-  description = "Size of the EBS volume for the app instance"
+variable "cluster_instance_ebs_size" {
+  description = "Size of the EBS volume for the cluster instances"
   type        = number
   default     = 8
+}
+
+variable "bastion_eni_ip" {
+  description = "Bastion ENI IP"
+  type        = string
+}
+
+variable "monitoring_frontend_eni_ip" {
+  description = "Monitoring frontend ENI IP"
+  type        = string
+}
+
+variable "monitoring_backend_eni_ip" {
+  description = "Monitoring backend ENI IP"
+  type        = string
+}
+
+variable "cluster_eni_ips" {
+  description = "Cluster ENI IPs"
+  type        = list(string)
 }

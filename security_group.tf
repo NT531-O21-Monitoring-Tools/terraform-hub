@@ -1,8 +1,8 @@
 # VPN Server Security Group
-module "vpn_server_sg" {
+module "bastion_sg" {
   source      = "./modules/security_group"
-  name        = "vpn-server"
-  description = "Security group for HAProxy VPN Server"
+  name        = "bastion_sg"
+  description = "Security group for bastion instance"
   vpc_id      = module.vpc.vpc_id
 
   ingress_rules_with_cidr = [
@@ -26,6 +26,13 @@ module "vpn_server_sg" {
       ip          = "0.0.0.0/0"
     },
     {
+      description = "Allow Node Exporter Access"
+      from_port   = 9100 # Node Exporter
+      to_port     = 9100
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
       description = "Allow SSH Access"
       from_port   = 22
       to_port     = 22
@@ -34,10 +41,10 @@ module "vpn_server_sg" {
     },
     {
       description = "Allow ICMP Access"
-      from_port = -1
-      to_port   = -1
-      protocol  = "icmp"
-      ip        = "0.0.0.0/0"
+      from_port   = -1
+      to_port     = -1
+      protocol    = "icmp"
+      ip          = "0.0.0.0/0"
     }
   ]
 
@@ -75,49 +82,49 @@ module "monitoring_sg" {
       from_port        = 9090
       to_port          = 9090
       protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
+      security_group_id = module.bastion_sg.id
     },
     {
       description      = "Allow Loki Access"
       from_port        = 3100
       to_port          = 3100
       protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
+      security_group_id = module.bastion_sg.id
     },
     {
       description      = "Allow Grafana Web UI Access"
       from_port        = 3000
       to_port          = 3000
       protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
+      security_group_id = module.bastion_sg.id
     },
     {
-      description      = "Allow Monitoring Access"
+      description      = "Allow Node Exporter Access"
       from_port        = 9100 # Node Exporter
       to_port          = 9100
       protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
+      security_group_id = module.bastion_sg.id
     },
     {
       description      = "Allow Icinga Web UI Access"
       from_port        = 80
       to_port          = 80
       protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
+      security_group_id = module.bastion_sg.id
     },
     {
       description       = "Allow Icinga API Access"
       from_port        = 5665
       to_port          = 5665
       protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
+      security_group_id = module.bastion_sg.id
     },
     {
       description = "Allow SSH Access"
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      security_group_id = module.vpn_server_sg.id
+      security_group_id = module.bastion_sg.id
     }
   ]
   egress_rules_with_cidr = [
@@ -131,7 +138,7 @@ module "monitoring_sg" {
 }
 
 # Server Applications Security Group (HA, Locust, Minikube)
-module "apps_sg" {
+module "cluster_sg" {
   source      = "./modules/security_group"
   name        = "applications"
   description = "Security group for Applications"
@@ -149,12 +156,33 @@ module "apps_sg" {
 
   ingress_rules_with_security_group = [
     {
+      description      = "Allow Node Exporter Access"
+      from_port        = 9100 # Node Exporter
+      to_port          = 9100
+      protocol         = "tcp"
+      security_group_id = module.bastion_sg.id
+    },
+    {
+      description      = "Allow Prometheus Access"
+      from_port        = 9090
+      to_port          = 9090
+      protocol         = "tcp"
+      security_group_id = module.bastion_sg.id
+    },
+    {
+      description      = "Allow Loki Access"
+      from_port        = 3100
+      to_port          = 3100
+      protocol         = "tcp"
+      security_group_id = module.bastion_sg.id
+    },
+    {
       description       = "Allow SSH Access"
       from_port        = 22
       to_port          = 22
       protocol         = "tcp"
-      security_group_id = module.vpn_server_sg.id
-    },
+      security_group_id = module.bastion_sg.id
+    }
   ]
 
   egress_rules_with_cidr = [

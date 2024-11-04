@@ -3,6 +3,11 @@ variable "name" {
   type        = string
 }
 
+variable "eni_count" {
+  description = "Number of Elastic Network Interfaces"
+  type        = number
+}
+
 variable "subnet_id" {
   description = "Subnet ID of the route table"
   type        = string
