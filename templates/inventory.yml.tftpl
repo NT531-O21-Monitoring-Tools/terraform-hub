@@ -1,0 +1,36 @@
+all:
+    children:
+        bastion:
+        monitoring:
+        cluster:
+    vars:
+        ansible_user: ubuntu
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+        ansible_python_interpreter: /usr/bin/python3
+
+bastion:
+    hosts:
+        bastion_host:
+            ansible_host: ${bastion_ip} # ${bastion_id}
+    vars:
+        subnet: public-subnet
+
+monitoring:
+    hosts:
+        monitoring_fe_host:
+            ansible_host: ${monitoring_fe_ip} # ${monitoring_fe_id}
+        monitoring_be_host:
+            ansible_host: ${monitoring_be_ip} # ${monitoring_be_id}
+    vars:
+        subnet: private-subnet-1
+
+cluster:
+    hosts:
+        k3s_master_host:
+            ansible_host: ${cluster_ip[0]} # ${cluster_id[0]}
+        k3s_worker_host_1:
+            ansible_host: ${cluster_ip[1]} # ${cluster_id[1]}
+        k3s_worker_host_2:
+            ansible_host: ${cluster_ip[2]} # ${cluster_id[2]}
+    vars:
+        subnet: private-subnet-0
