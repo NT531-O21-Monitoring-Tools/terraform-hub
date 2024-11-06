@@ -29,42 +29,6 @@ locals {
 }
 
 # ENIs
-# module "bastion_eni" {
-#   source = "./modules/eni"
-#   eni_count = var.bastion_instance_count
-#   name = "bastion_eni"
-#   subnet_id = module.vpc.public_subnets[0]
-#   private_ips = [var.bastion_eni_ip]
-#   security_group_ids = [module.bastion_sg.id]
-# }
-
-# module "monitoring_fe_eni" {
-#   source = "./modules/eni"
-#   eni_count = var.monitoring_frontend_instance_count
-#   name = "monitoring_fe_eni"
-#   subnet_id = module.vpc.private_subnets[1]
-#   private_ips = [var.monitoring_frontend_eni_ip]
-#   security_group_ids = [module.monitoring_sg.id]
-# }
-
-# module "monitoring_be_eni" {
-#   source = "./modules/eni"
-#   eni_count = var.monitoring_backend_instance_count
-#   name = "monitoring_be_eni"
-#   subnet_id = module.vpc.private_subnets[1]
-#   private_ips = [var.monitoring_backend_eni_ip]
-#   security_group_ids = [module.monitoring_sg.id]
-# }
-
-# module "cluster_eni" {
-#   source = "./modules/eni"
-#   eni_count = length(var.cluster_eni_ips)
-#   name = "cluster_eni"
-#   subnet_id = module.vpc.private_subnets[0]
-#   private_ips = var.cluster_eni_ips
-#   security_group_ids = [module.cluster_sg.id]
-# }
-
 resource "aws_network_interface" "bastion_eni" {
   count             = var.bastion_instance_count
   subnet_id         = module.vpc.public_subnets[0]
@@ -102,7 +66,7 @@ resource "aws_network_interface" "monitoring_be_eni" {
 resource "aws_network_interface" "cluster_eni" {
   count             = length(var.cluster_eni_ips)
   subnet_id         = module.vpc.private_subnets[0]
-  private_ips       = var.cluster_eni_ips
+  private_ips       = [var.cluster_eni_ips[count.index]]
   security_groups   = [module.cluster_sg.id]
 
   tags = {
