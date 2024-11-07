@@ -1,7 +1,7 @@
 # VPN Server Security Group
 module "bastion_sg" {
   source      = "./modules/security_group"
-  name        = "bastion_sg"
+  name        = "${var.aws_project}-bastion_sg"
   description = "Security group for bastion instance"
   vpc_id      = module.vpc.vpc_id
 
@@ -22,7 +22,7 @@ module "bastion_sg" {
       description = "Allow OpenVPN Access"
       from_port   = 1194
       to_port     = 1194
-      protocol    = "tcp"
+      protocol    = "udp"
       ip          = "0.0.0.0/0"
     },
     {
@@ -62,7 +62,7 @@ module "bastion_sg" {
 # Monitoring Security Group (Prometheus/Loki & Grafana/Icinga)
 module "monitoring_sg" {
   source      = "./modules/security_group"
-  name        = "${var.aws_project}-private"
+  name        = "${var.aws_project}-monitoring_sg"
   vpc_id      = module.vpc.vpc_id
   description = "Security group for Monitoring"
 
@@ -73,6 +73,13 @@ module "monitoring_sg" {
       to_port   = -1
       protocol  = "icmp"
       ip        = "0.0.0.0/0"
+    },
+    {
+      description = "Allow SSH Access"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
     }
    ]
 
@@ -118,13 +125,6 @@ module "monitoring_sg" {
       to_port          = 5665
       protocol         = "tcp"
       security_group_id = module.bastion_sg.id
-    },
-    {
-      description = "Allow SSH Access"
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      security_group_id = module.bastion_sg.id
     }
   ]
   egress_rules_with_cidr = [
@@ -140,7 +140,7 @@ module "monitoring_sg" {
 # Server Applications Security Group (HA, Locust, Minikube)
 module "cluster_sg" {
   source      = "./modules/security_group"
-  name        = "applications"
+  name        = "${var.aws_project}-cluster_sg"
   description = "Security group for Applications"
   vpc_id      = module.vpc.vpc_id
 
@@ -151,6 +151,13 @@ module "cluster_sg" {
       to_port   = -1
       protocol  = "icmp"
       ip        = "0.0.0.0/0"
+    },
+    {
+      description = "Allow SSH Access"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
     }
    ]
 
@@ -173,13 +180,6 @@ module "cluster_sg" {
       description      = "Allow Loki Access"
       from_port        = 3100
       to_port          = 3100
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    },
-    {
-      description       = "Allow SSH Access"
-      from_port        = 22
-      to_port          = 22
       protocol         = "tcp"
       security_group_id = module.bastion_sg.id
     }

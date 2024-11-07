@@ -12,3 +12,4 @@
 *.tmp
 *.log
 *.bin
+inventory.yml

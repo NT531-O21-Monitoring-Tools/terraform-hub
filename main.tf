@@ -93,10 +93,10 @@ module "vpc" {
 resource "aws_instance" "bastion_instance" {
   count         = var.bastion_instance_count
   ami           = local.ec2_ami
-  instance_type = var.aws_instance_type
+  instance_type = "t2.small"
 
   key_name               = var.aws_key_name
-  user_data              = file("./scripts/init-script.sh")
+  user_data              = file("./scripts/bastion-init.sh")
 
   network_interface {
     network_interface_id = aws_network_interface.bastion_eni[count.index].id
@@ -116,9 +116,10 @@ resource "aws_instance" "bastion_instance" {
 resource "aws_instance" "monitoring_fe_instance" {
   count                  = var.monitoring_frontend_instance_count
   ami                    = local.ec2_ami
-  instance_type          = var.aws_instance_type
+  instance_type          = "t2.small"
 
   key_name               = var.aws_key_name
+  user_data             = file("./scripts/init.sh")
 
   network_interface {
     network_interface_id = aws_network_interface.monitoring_fe_eni[count.index].id
@@ -138,9 +139,10 @@ resource "aws_instance" "monitoring_fe_instance" {
 resource "aws_instance" "monitoring_be_instance" {
   count                  = var.monitoring_backend_instance_count
   ami                    = local.ec2_ami
-  instance_type          = var.aws_instance_type
+  instance_type          = "t2.small"
 
   key_name               = var.aws_key_name
+  user_data              = file("./scripts/init.sh")
 
   network_interface {
     network_interface_id = aws_network_interface.monitoring_be_eni[count.index].id
@@ -163,6 +165,7 @@ resource "aws_instance" "k3s_instance" {
   instance_type          = var.aws_instance_type
 
   key_name               = var.aws_key_name
+  user_data             = file("./scripts/init.sh")
 
   network_interface {
     network_interface_id = aws_network_interface.cluster_eni[count.index].id
@@ -175,5 +178,33 @@ resource "aws_instance" "k3s_instance" {
 
   tags = {
     Name = "${var.aws_project}-cluster-instance-${count.index}"
+  }
+}
+
+resource "null_resource" "set_up_openvpn_server" {
+  depends_on = [ aws_instance.bastion_instance ]
+
+  triggers = {
+    "always_run" = timestamp()
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    host        = aws_instance.bastion_instance[0].public_ip
+    private_key = file("${path.root}/${var.aws_key_name}.pem")
+    agent = false
+  }
+
+  provisioner "file" {
+    source      = "./scripts/openvpn-install.sh"
+    destination = "/home/ubuntu/openvpn-install.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [ 
+      "chmod +x /home/ubuntu/openvpn-install.sh",
+      "sudo /home/ubuntu/openvpn-install.sh"
+     ]
   }
 }
