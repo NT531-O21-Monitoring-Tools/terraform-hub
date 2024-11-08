@@ -1,21 +1,30 @@
 aws_region      = "us-east-1"
-# aws_profile     = "<your_aws_cli_profile>"
-aws_environment = "dev"
-aws_project     = "lab1"
-aws_owner       = "devops-team"
+aws_profile     = "aws-learner-lab"
+aws_environment = "prod"
+aws_project     = "NT531.P11"
+aws_owner       = "Group01"
+aws_key_name    = "learner-lab"
 
 aws_vpc_config = {
   cidr_block                   = "192.168.0.0/16"
   enable_dns_support           = true
   enable_dns_hostnames         = true
-  public_subnets_cidr          = ["192.168.3.0/24"]
-  private_subnets_cidr         = ["192.168.1.0/24", "192.168.2.0/24"]
-  number_of_availability_zones = 2
-  enable_nat_gateway           = true
+  public_subnets_cidr          = ["192.168.130.0/24"]
+  private_subnets_cidr         = ["192.168.110.0/24", "192.168.120.0/24"]
+  number_of_availability_zones = 1
+  enable_nat_gateway           = false
 }
 
-vpn_instance_count                  = 1
-monitoring_frontend_instance_count  = 1
-monitoring_backend_instance_count   = 1
-app_instance_count                  = 1
-aws_instance_type                   = "t2.micro"
+bastion_instance_count                = 1
+bastion_instance_ebs_size             = 10
+bastion_eni_ip                        = "192.168.130.30"
+monitoring_frontend_instance_count    = 1
+monitoring_frontend_instance_ebs_size = 10
+monitoring_frontend_eni_ip            = "192.168.120.20"
+monitoring_backend_instance_count     = 1
+monitoring_backend_instance_ebs_size  = 10
+monitoring_backend_eni_ip             = "192.168.120.21"
+cluster_instance_count                = 3
+cluster_instance_ebs_size             = 20
+cluster_eni_ips                       = ["192.168.110.10", "192.168.110.11", "192.168.110.12"]
+aws_instance_type                     = "t2.micro"

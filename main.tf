@@ -162,7 +162,7 @@ resource "aws_instance" "monitoring_be_instance" {
 resource "aws_instance" "k3s_instance" {
   count                  = var.cluster_instance_count
   ami                    = local.ec2_ami
-  instance_type          = var.aws_instance_type
+  instance_type          = "t2.medium"
 
   key_name               = var.aws_key_name
   user_data             = file("./scripts/init.sh")

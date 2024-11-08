@@ -66,13 +66,20 @@ module "monitoring_sg" {
   vpc_id      = module.vpc.vpc_id
   description = "Security group for Monitoring"
 
-  ingress_rules_with_cidr = [ 
+  ingress_rules_with_cidr = [
     {
       description = "Allow ICMP Access"
-      from_port = -1
-      to_port   = -1
-      protocol  = "icmp"
-      ip        = "0.0.0.0/0"
+      from_port   = -1
+      to_port     = -1
+      protocol    = "icmp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Icinga Web UI Access"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
     },
     {
       description = "Allow SSH Access"
@@ -80,53 +87,43 @@ module "monitoring_sg" {
       to_port     = 22
       protocol    = "tcp"
       ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Node Exporter Access"
+      from_port   = 9100 # Node Exporter
+      to_port     = 9100
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Prometheus Access"
+      from_port   = 9090
+      to_port     = 9090
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Loki Access"
+      from_port   = 3100
+      to_port     = 3100
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Grafana Web UI Access"
+      from_port   = 3000
+      to_port     = 3000
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Icinga API Access"
+      from_port   = 5665
+      to_port     = 5665
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
     }
    ]
-
-  ingress_rules_with_security_group = [
-    {
-      description      = "Allow Prometheus Access"
-      from_port        = 9090
-      to_port          = 9090
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    },
-    {
-      description      = "Allow Loki Access"
-      from_port        = 3100
-      to_port          = 3100
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    },
-    {
-      description      = "Allow Grafana Web UI Access"
-      from_port        = 3000
-      to_port          = 3000
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    },
-    {
-      description      = "Allow Node Exporter Access"
-      from_port        = 9100 # Node Exporter
-      to_port          = 9100
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    },
-    {
-      description      = "Allow Icinga Web UI Access"
-      from_port        = 80
-      to_port          = 80
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    },
-    {
-      description       = "Allow Icinga API Access"
-      from_port        = 5665
-      to_port          = 5665
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    }
-  ]
   egress_rules_with_cidr = [
     {
       protocol    = -1
@@ -147,10 +144,10 @@ module "cluster_sg" {
   ingress_rules_with_cidr = [ 
     {
       description = "Allow ICMP Access"
-      from_port = -1
-      to_port   = -1
-      protocol  = "icmp"
-      ip        = "0.0.0.0/0"
+      from_port   = -1
+      to_port     = -1
+      protocol    = "icmp"
+      ip          = "0.0.0.0/0"
     },
     {
       description = "Allow SSH Access"
@@ -158,32 +155,43 @@ module "cluster_sg" {
       to_port     = 22
       protocol    = "tcp"
       ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Node Exporter Access"
+      from_port   = 9100
+      to_port     = 9100
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Prometheus Access"
+      from_port   = 9090
+      to_port     = 9090
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow Loki Access"
+      from_port   = 3100
+      to_port     = 3100
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "K3s supervisor and Kubernetes API Server"
+      from_port   = 6443
+      to_port     = 6443
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Kubelet metrics"
+      from_port   = 10250
+      to_port     = 10250
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
     }
    ]
-
-  ingress_rules_with_security_group = [
-    {
-      description      = "Allow Node Exporter Access"
-      from_port        = 9100 # Node Exporter
-      to_port          = 9100
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    },
-    {
-      description      = "Allow Prometheus Access"
-      from_port        = 9090
-      to_port          = 9090
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    },
-    {
-      description      = "Allow Loki Access"
-      from_port        = 3100
-      to_port          = 3100
-      protocol         = "tcp"
-      security_group_id = module.bastion_sg.id
-    }
-  ]
 
   egress_rules_with_cidr = [
     {
