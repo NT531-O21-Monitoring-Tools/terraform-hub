@@ -116,7 +116,7 @@ resource "aws_instance" "bastion_instance" {
 resource "aws_instance" "monitoring_fe_instance" {
   count                  = var.monitoring_frontend_instance_count
   ami                    = local.ec2_ami
-  instance_type          = "t2.small"
+  instance_type          = "t2.medium"
 
   key_name               = var.aws_key_name
   user_data             = file("./scripts/init.sh")
@@ -139,7 +139,7 @@ resource "aws_instance" "monitoring_fe_instance" {
 resource "aws_instance" "monitoring_be_instance" {
   count                  = var.monitoring_backend_instance_count
   ami                    = local.ec2_ami
-  instance_type          = "t2.small"
+  instance_type          = "t2.medium"
 
   key_name               = var.aws_key_name
   user_data              = file("./scripts/init.sh")

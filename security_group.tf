@@ -110,6 +110,13 @@ module "monitoring_sg" {
       ip          = "0.0.0.0/0"
     },
     {
+      description = "Allow Promtail Access"
+      from_port   = 9080
+      to_port     = 9080
+      protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
       description = "Allow Grafana Web UI Access"
       from_port   = 3000
       to_port     = 3000
@@ -124,13 +131,15 @@ module "monitoring_sg" {
       ip          = "0.0.0.0/0"
     }
    ]
+
   egress_rules_with_cidr = [
     {
-      protocol    = -1
+      description = "Allow all outbound traffic"
       from_port   = -1
       to_port     = -1
+      protocol    = "-1"
       ip          = "0.0.0.0/0"
-    },
+    }
   ]
 }
 
@@ -189,6 +198,13 @@ module "cluster_sg" {
       from_port   = 10250
       to_port     = 10250
       protocol    = "tcp"
+      ip          = "0.0.0.0/0"
+    },
+    {
+      description = "Allow all traffic"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
       ip          = "0.0.0.0/0"
     }
    ]
